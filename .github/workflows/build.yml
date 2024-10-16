@@ -118,5 +118,5 @@ jobs:
     - name: Upload release
       uses: actions/upload-artifact@v3
       with:
-        name: Release for ${{ matrix.name }}
-        path: release/test_${{ matrix.name }}.zip
+        name: Release for test
+        path: $ASEPRITE
