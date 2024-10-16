@@ -119,4 +119,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Release for test
-        path: $ASEPRITE
+        path: build/bin/aseprite/
