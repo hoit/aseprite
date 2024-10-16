@@ -19,8 +19,10 @@ jobs:
           - build_type: RelWithDebInfo
             scripting: noscripts
     steps:
+    - name: checkout
+      uses: actions/checkout@v4
     - name: Upload release
       uses: actions/upload-artifact@v3
       with:
         name: Release for test
-        path: $PWD/CONTRIBUTING.md
+        path: CONTRIBUTING.md
