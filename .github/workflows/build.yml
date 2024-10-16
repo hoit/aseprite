@@ -6,7 +6,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        #os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [macos-14]
         build_type: [RelWithDebInfo, Debug]
         ui: [gui, cli]
         scripting: [lua, noscripts]
@@ -109,3 +110,12 @@ jobs:
         export ASEPRITE=$PWD/build/bin/aseprite
         cd tests
         $XVFB bash run-tests.sh
+
+      # ------------------------------------ #
+      # Upload releases                      #
+      # ------------------------------------ #
+    - name: Upload release
+      uses: actions/upload-artifact@v3
+      with:
+        name: Release for ${{ matrix.name }}
+        path: release/test_${{ matrix.name }}.zip
