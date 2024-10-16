@@ -115,8 +115,10 @@ jobs:
       # ------------------------------------ #
       # Upload releases                      #
       # ------------------------------------ #
-    - name: Upload release
+    - name: test checkout
+      uses: actions/checkout@v4
+    - name: artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Release for test
+        name: test
         path: build/bin/aseprite/
