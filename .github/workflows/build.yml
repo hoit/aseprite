@@ -114,5 +114,5 @@ jobs:
     - name: artifact
       uses: actions/upload-artifact@v4
       with:
-        name: test
-        path: /Users/runner/work/aseprite/aseprite/build
+        name: test-${{ matrix.os }}-${{ matrix.ui }}-${{ matrix.scripting }}-${{ matrix.build_type }}
+        path: /Users/runner/work/aseprite/aseprite/build/bin
