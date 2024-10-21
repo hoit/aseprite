@@ -8,9 +8,11 @@ jobs:
       fail-fast: false
       matrix:
         #os: [windows-latest, macos-latest, ubuntu-latest]
+        # adapter le chemin de l'artifact en fonction de l'OS
         os: [ubuntu-latest]
         build_type: [RelWithDebInfo, Debug]
-        ui: [gui, cli]
+        #ui: [gui, cli]
+        ui: [gui]
         scripting: [lua, noscripts]
         exclude:
           - build_type: Debug
@@ -115,4 +117,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}-${{ matrix.ui }}-${{ matrix.scripting }}-${{ matrix.build_type }}
-        path: /Users/runner/work/aseprite/aseprite/build/bin
+        # path pour MAC OS
+        #path: /Users/runner/work/aseprite/aseprite/build/bin
+        # path pour Ubuntu
+        path: /home/runner/work/aseprite/aseprite/build/bin
