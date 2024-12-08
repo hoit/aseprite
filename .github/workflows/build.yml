@@ -120,6 +120,6 @@ jobs:
         # path pour MAC OS
         #path: /Users/runner/work/aseprite/aseprite/build/bin
         # path pour Ubuntu
-        path: /home/runner/work/aseprite/aseprite/build/bin
+        #path: /home/runner/work/aseprite/aseprite/build/bin
         # path pour Windows
-        path: D:/a/aseprite/aseprite
+        path: D:/a/aseprite/aseprite/build/bin
