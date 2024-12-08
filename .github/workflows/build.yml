@@ -121,3 +121,5 @@ jobs:
         #path: /Users/runner/work/aseprite/aseprite/build/bin
         # path pour Ubuntu
         path: /home/runner/work/aseprite/aseprite/build/bin
+        # path pour Windows
+        path: D:/a/aseprite/aseprite
