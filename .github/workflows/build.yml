@@ -9,7 +9,7 @@ jobs:
       matrix:
         #os: [windows-latest, macos-latest, ubuntu-latest]
         # adapter le chemin de l'artifact en fonction de l'OS
-        os: [ubuntu-latest]
+        os: [windows-latest]
         build_type: [RelWithDebInfo, Debug]
         #ui: [gui, cli]
         ui: [gui]
