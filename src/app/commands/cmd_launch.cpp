@@ -6,7 +6,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/commands/command.h"
@@ -23,11 +23,10 @@ public:
 
 protected:
   void onLoadParams(const Params& params) override;
+  bool onNeedsParams() const override { return true; };
   void onExecute(Context* context) override;
   std::string onGetFriendlyName() const override;
-  bool isListed(const Params& params) const override {
-    return !params.get("path").empty();
-  }
+  bool isListed(const Params& params) const override { return !params.get("path").empty(); }
 
 private:
   enum Type { Url };
@@ -36,10 +35,7 @@ private:
   std::string m_path;
 };
 
-LaunchCommand::LaunchCommand()
-  : Command(CommandId::Launch(), CmdUIOnlyFlag)
-  , m_type(Url)
-  , m_path("")
+LaunchCommand::LaunchCommand() : Command(CommandId::Launch()), m_type(Url), m_path("")
 {
 }
 
@@ -55,11 +51,7 @@ void LaunchCommand::onLoadParams(const Params& params)
 void LaunchCommand::onExecute(Context* context)
 {
   switch (m_type) {
-
-    case Url:
-      launcher::open_url(m_path);
-      break;
-
+    case Url: launcher::open_url(m_path); break;
   }
 }
 

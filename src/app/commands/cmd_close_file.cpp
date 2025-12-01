@@ -6,21 +6,15 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/app.h"
 #include "app/commands/command.h"
 #include "app/commands/commands.h"
-#include "app/context_access.h"
 #include "app/ui/doc_view.h"
-#include "app/ui/status_bar.h"
 #include "app/ui/workspace.h"
 #include "app/ui_context.h"
-#include "doc/sprite.h"
-#include "ui/ui.h"
-
-#include <memory>
 
 namespace app {
 
@@ -28,13 +22,11 @@ using namespace ui;
 
 class CloseFileCommand : public Command {
 public:
-  CloseFileCommand()
-    : Command(CommandId::CloseFile(), CmdUIOnlyFlag) {
-  }
+  CloseFileCommand() : Command(CommandId::CloseFile()) {}
 
 protected:
-
-  bool onEnabled(Context* context) override {
+  bool onEnabled(Context* context) override
+  {
     Workspace* workspace = App::instance()->workspace();
     if (!workspace) // Workspace (main window) can be null if we are in --batch mode
       return false;
@@ -42,7 +34,8 @@ protected:
     return (view != nullptr);
   }
 
-  void onExecute(Context* context) override {
+  void onExecute(Context* context) override
+  {
     Workspace* workspace = App::instance()->workspace();
     WorkspaceView* view = workspace->activeView();
     if (view)
@@ -52,18 +45,19 @@ protected:
 
 class CloseAllFilesCommand : public Command {
 public:
-  CloseAllFilesCommand()
-    : Command(CommandId::CloseAllFiles(), CmdRecordableFlag) {
-    m_quitting = false;
-  }
+  CloseAllFilesCommand() : Command(CommandId::CloseAllFiles()) { m_quitting = false; }
 
 protected:
-
-  void onLoadParams(const Params& params) override {
-    m_quitting = params.get_as<bool>("quitting");
+  bool onEnabled(Context* context) override
+  {
+    // Null if we are in --batch mode
+    return App::instance()->workspace() != nullptr;
   }
 
-  void onExecute(Context* context) override {
+  void onLoadParams(const Params& params) override { m_quitting = params.get_as<bool>("quitting"); }
+
+  void onExecute(Context* context) override
+  {
     Workspace* workspace = App::instance()->workspace();
     if (!workspace) // Workspace (main window) can be null if we are in --batch mode
       return;

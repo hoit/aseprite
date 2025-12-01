@@ -6,7 +6,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include <string>
@@ -14,6 +14,7 @@
 #include "app/app.h"
 #include "app/commands/command.h"
 #include "app/commands/params.h"
+#include "app/context.h"
 #include "app/i18n/strings.h"
 #include "app/modules/palettes.h"
 #include "app/ui/color_bar.h"
@@ -21,8 +22,7 @@
 
 namespace app {
 
-class ChangeColorCommand : public Command
-{
+class ChangeColorCommand : public Command {
   enum Change {
     None,
     IncrementIndex,
@@ -40,35 +40,43 @@ public:
   ChangeColorCommand();
 
 protected:
+  bool onEnabled(Context* context) override;
   bool onNeedsParams() const override { return true; }
   void onLoadParams(const Params& params) override;
   void onExecute(Context* context) override;
   std::string onGetFriendlyName() const override;
 };
 
-ChangeColorCommand::ChangeColorCommand()
-  : Command(CommandId::ChangeColor(), CmdUIOnlyFlag)
+ChangeColorCommand::ChangeColorCommand() : Command(CommandId::ChangeColor())
 {
   m_background = false;
   m_change = None;
 }
 
+bool ChangeColorCommand::onEnabled(Context* context)
+{
+  return context->isUIAvailable();
+}
+
 void ChangeColorCommand::onLoadParams(const Params& params)
 {
   std::string target = params.get("target");
-  if (target == "foreground") m_background = false;
-  else if (target == "background") m_background = true;
+  if (target == "foreground")
+    m_background = false;
+  else if (target == "background")
+    m_background = true;
 
   std::string change = params.get("change");
-  if (change == "increment-index") m_change = IncrementIndex;
-  else if (change == "decrement-index") m_change = DecrementIndex;
+  if (change == "increment-index")
+    m_change = IncrementIndex;
+  else if (change == "decrement-index")
+    m_change = DecrementIndex;
 }
 
 void ChangeColorCommand::onExecute(Context* context)
 {
   ColorBar* colorbar = ColorBar::instance();
-  app::Color color = m_background ? colorbar->getBgColor():
-                                    colorbar->getFgColor();
+  app::Color color = m_background ? colorbar->getBgColor() : colorbar->getFgColor();
 
   switch (m_change) {
     case None:
@@ -104,8 +112,7 @@ std::string ChangeColorCommand::onGetFriendlyName() const
   std::string action;
 
   switch (m_change) {
-    case None:
-      break;
+    case None: break;
     case IncrementIndex:
       if (m_background)
         action = Strings::commands_ChangeColor_IncrementBgIndex();

@@ -16,7 +16,7 @@ Before you submit an issue:
   click the `Subscribe` or `Watching` button to get notifications
   via email.
 
-# Compilation problem
+# Compilation problems
 
 Before you submit an issue or a post about a **compilation problem**,
 check the following items:
@@ -77,6 +77,20 @@ new [features](https://community.aseprite.org/c/features),
 [bug reports](https://community.aseprite.org/c/bugs), etc. You are
 encouraged to create mockups for any issue you see and attach them.
 
+## Pre-commit hooks
+
+We use [pre-commit](https://pre-commit.com/) as way to set up hooks, you can install it with:
+
+```
+pip install pre-commit
+pre-commit install
+```
+
+If you need to run it manually, use `pre-commit run`.
+
+To run `clang-tidy`, you can use `pre-commit run --hook-stage manual clang-tidy`.
+Make sure to check the suggestions and to not apply them arbitrarily, since some might not be 100% applicable to what you're doing.
+
 ## Code submission policy
 
 We have some rules for the changes and commits that are contributed:
@@ -100,7 +114,7 @@ We have some rules for the changes and commits that are contributed:
   the subject line.
 * Check the spelling of your code, comments and commit messages.
 * Follow our [coding style guide](docs/CODING_STYLE.md). We're using
-  some C++17 features, targeting macOS 10.9 mainly as the oldest
+  some C++17 features, targeting macOS 10.14 mainly as the oldest
   platform (and the one limiting us to newer C++ standards),
 
 You can also take a look at the [src/README.md](https://github.com/aseprite/aseprite/tree/main/src/#aseprite-source-code)

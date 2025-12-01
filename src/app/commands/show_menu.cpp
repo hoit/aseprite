@@ -5,7 +5,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/app_menus.h"
@@ -17,7 +17,7 @@
 namespace app {
 
 struct ShowMenuParams : public NewParams {
-  Param<std::string> menu { this, "", "menu" };
+  Param<std::string> menu{ this, "", "menu" };
 };
 
 class ShowMenuCommand : public CommandWithNewParams<ShowMenuParams> {
@@ -33,8 +33,7 @@ protected:
   void openSubmenuById(Menu* menu, const std::string& id);
 };
 
-ShowMenuCommand::ShowMenuCommand()
-  : CommandWithNewParams<ShowMenuParams>(CommandId::ShowMenu(), CmdUIOnlyFlag)
+ShowMenuCommand::ShowMenuCommand() : CommandWithNewParams<ShowMenuParams>(CommandId::ShowMenu())
 {
 }
 

@@ -1,8 +1,8 @@
 # Aseprite
-# Copyright (C) 2018-2024  Igara Studio S.A.
+# Copyright (C) 2018-2025  Igara Studio S.A.
 # Copyright (C) 2001-2018  David Capello
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,8 +23,35 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/laf/cmake/cxx
 project(aseprite C CXX)
 
 # Check repository status
-if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/laf/CMakeLists.txt)
-  message(FATAL_ERROR "Your Aseprite repository is incomplete, initialize submodules using:\n  git submodule update --init --recursive")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/laf/CMakeLists.txt" OR
+   NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/laf/clip/CMakeLists.txt")
+  message(FATAL_ERROR
+    "Your Aseprite repository looks incomplete. Please read the following "
+    "instructions carefully:"
+    "\n"
+    "1) If you have downloaded Aseprite source using the "
+    "\"Code > Download ZIP\" button from GitHub, you will not be able to "
+    "compile Aseprite. You need to get the code with other methods (continue "
+    "reading)."
+    "\n"
+    "2) You can correctly clone the GitHub repository with the "
+    "\"--recursive\" argument:"
+    "\n"
+    "  git clone --recursive https://github.com/aseprite/aseprite.git"
+    "\n"
+    "3) If you have already cloned the repository and see this message, "
+    "you still need to initialize submodules running the following command:"
+    "\n"
+    "  git submodule update --init --recursive"
+    "\n"
+    "4) Or if you want to download the full source code in a .zip file, "
+    "go to the releases page and get the latest \"Aseprite-v1.x-Source.zip\":"
+    "\n"
+    "  https://github.com/aseprite/aseprite/releases"
+    "\n"
+    "More information in the building instructions:"
+    "\n"
+    "  https://github.com/aseprite/aseprite/blob/main/INSTALL.md#get-the-source-code")
 endif()
 
 # This is required for KDE/Qt destop integration, which sets
@@ -40,9 +67,9 @@ enable_testing()
 option(USE_SHARED_CMARK   "Use your installed copy of cmark" off)
 option(USE_SHARED_CURL    "Use your installed copy of curl" off)
 option(USE_SHARED_GIFLIB  "Use your installed copy of giflib" off)
-option(USE_SHARED_JPEGLIB "Use your installed copy of jpeglib" off)
 option(USE_SHARED_ZLIB    "Use your installed copy of zlib" off)
 option(USE_SHARED_LIBPNG  "Use your installed copy of libpng" off)
+option(USE_SHARED_TINYEXIF "Use your installed copy of TinyEXIF" off)
 option(USE_SHARED_TINYXML "Use your installed copy of tinyxml" off)
 option(USE_SHARED_PIXMAN  "Use your installed copy of pixman" off)
 option(USE_SHARED_FREETYPE "Use shared FreeType library" off)
@@ -158,13 +185,13 @@ set(SOURCE_DATA_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/data)
 set(CMARK_DIR           ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cmark)
 set(CURL_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/curl)
 set(GIFLIB_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/third_party/giflib)
-set(LIBJPEG_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/jpeg)
 set(LIBPNG_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libpng)
 set(LIBWEBP_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libwebp)
 set(PIXMAN_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/third_party/pixman)
 set(FREETYPE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/freetype2)
 set(HARFBUZZ_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/harfbuzz)
 set(SIMPLEINI_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third_party/simpleini)
+set(TINYEXIF_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/TinyEXIF)
 set(TINYXML_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/tinyxml2)
 set(ZLIB_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib)
 
@@ -200,12 +227,12 @@ endif()
 if(USE_SHARED_ZLIB)
   find_package(ZLIB REQUIRED)
 else()
-  set(ZLIB_FOUND)
+  set(ZLIB_FOUND ON)
   set(ZLIB_LIBRARY zlibstatic)
   set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
   set(ZLIB_INCLUDE_DIRS
     ${ZLIB_DIR}
-    ${CMAKE_BINARY_DIR}/third_party/zlib) # Zlib generated zconf.h file
+    ${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib) # Zlib generated zconf.h file
   set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS} CACHE PATH "")
 endif()
 include_directories(${ZLIB_INCLUDE_DIRS})
@@ -216,7 +243,13 @@ if(USE_SHARED_LIBPNG)
   add_definitions(${PNG_DEFINITIONS})
 else()
   set(PNG_FOUND ON)
-  set(PNG_LIBRARY png_static)
+
+  # Skia on Linux includes libpng symbols
+  if(UNIX AND NOT APPLE AND LAF_BACKEND STREQUAL "skia")
+    set(PNG_LIBRARY skia)
+  else()
+    set(PNG_LIBRARY png_static)
+  endif()
   set(PNG_LIBRARIES ${PNG_LIBRARY})
   set(PNG_INCLUDE_DIRS
     ${LIBPNG_DIR}
@@ -236,6 +269,16 @@ else()
   set(TINYXML_INCLUDE_DIR ${TINYXML_DIR})
 endif()
 include_directories(${TINYXML_INCLUDE_DIR})
+
+# TinyEXIF
+if(USE_SHARED_TINYEXIF)
+  find_library(TINYEXIF_LIBRARY NAMES TinyEXIF)
+  find_path(TINYEXIF_INCLUDE_DIR NAMES TinyEXIF.h)
+else()
+  set(TINYEXIF_LIBRARY TinyEXIFstatic)
+  set(TINYEXIF_INCLUDE_DIR ${TINYEXIF_DIR})
+endif()
+include_directories(${TINYEXIF_INCLUDE_DIR})
 
 # pixman
 if(USE_SHARED_PIXMAN)
@@ -278,17 +321,10 @@ else()
 endif()
 include_directories(${GIF_INCLUDE_DIRS})
 
-if(USE_SHARED_JPEGLIB)
-  find_package(JPEG REQUIRED)
-else()
-  set(JPEG_FOUND ON)
-  set(JPEG_INCLUDE_DIR ${LIBJPEG_DIR})
-  set(JPEG_LIBRARY jpeg CACHE FILEPATH "")
-  set(JPEG_LIBRARIES ${JPEG_LIBRARY})
-  set(JPEG_INCLUDE_DIRS ${JPEG_INCLUDE_DIR})
-endif()
-include_directories(${JPEG_INCLUDE_DIRS})
+# libjpeg-turbo
+find_package(JpegTurbo)
 
+# cmark
 if(USE_SHARED_CMARK)
   find_library(CMARK_LIBRARIES NAMES cmark)
   find_path(CMARK_INCLUDE_DIRS NAMES cmark.h)
@@ -346,7 +382,11 @@ if(ENABLE_WEBP)
     set(WEBP_INCLUDE_DIR ${LIBWEBP_DIR}/src)
   endif()
 endif()
+
+# Print paths to used libraries
+message(STATUS "aseprite giflib: ${GIF_LIBRARY}")
 message(STATUS "aseprite libwebp: ${WEBP_LIBRARIES}")
+message(STATUS "aseprite libjpeg-turbo: ${LIBJPEG_TURBO_LIBRARY}")
 
 # LAF libraries + Aseprite are compiled with config.h
 target_include_directories(laf-base PUBLIC src)

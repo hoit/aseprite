@@ -6,7 +6,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #ifndef ENABLE_SCRIPTING
@@ -16,7 +16,6 @@
 #include "app/app.h"
 #include "app/commands/command.h"
 #include "app/commands/params.h"
-#include "app/console.h"
 #include "app/context.h"
 #include "app/i18n/strings.h"
 #include "app/pref/preferences.h"
@@ -27,8 +26,6 @@
 #include "fmt/format.h"
 #include "ui/manager.h"
 
-#include <cstdio>
-
 namespace app {
 
 class RunScriptCommand : public Command {
@@ -37,6 +34,7 @@ public:
 
 protected:
   void onLoadParams(const Params& params) override;
+  bool onNeedsParams() const override { return true; };
   void onExecute(Context* context) override;
   std::string onGetFriendlyName() const override;
   bool isListed(const Params& params) const override { return !params.empty(); }
@@ -46,8 +44,7 @@ private:
   Params m_params;
 };
 
-RunScriptCommand::RunScriptCommand()
-  : Command(CommandId::RunScript(), CmdRecordableFlag)
+RunScriptCommand::RunScriptCommand() : Command(CommandId::RunScript())
 {
 }
 
@@ -67,17 +64,14 @@ void RunScriptCommand::onLoadParams(const Params& params)
 void RunScriptCommand::onExecute(Context* context)
 {
   if (context->isUIAvailable()) {
-    int ret = OptionalAlert::show(
-      Preferences::instance().scripts.showRunScriptAlert,
-      1, // Yes is the default option when the alert dialog is disabled
-      Strings::alerts_run_script(m_filename));
+    int ret = OptionalAlert::show(Preferences::instance().scripts.showRunScriptAlert,
+                                  1, // Yes is the default option when the alert dialog is disabled
+                                  Strings::alerts_run_script(m_filename));
     if (ret != 1)
       return;
   }
 
-  App::instance()
-    ->scriptEngine()
-    ->evalUserFile(m_filename, m_params);
+  App::instance()->scriptEngine()->evalUserFile(m_filename, m_params);
 
   if (context->isUIAvailable())
     ui::Manager::getDefault()->invalidate();
@@ -88,9 +82,7 @@ std::string RunScriptCommand::onGetFriendlyName() const
   if (m_filename.empty())
     return Strings::commands_RunScript();
 
-  return fmt::format("{0}: {1}",
-                     Strings::commands_RunScript(),
-                     base::get_file_name(m_filename));
+  return fmt::format("{0}: {1}", Strings::commands_RunScript(), base::get_file_name(m_filename));
 }
 
 Command* CommandFactory::createRunScriptCommand()

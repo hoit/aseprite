@@ -6,7 +6,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/app.h"
@@ -22,6 +22,8 @@ public:
   OpenBrowserCommand();
 
 protected:
+  bool onEnabled(Context* context) override;
+  bool onNeedsParams() const override { return true; };
   void onLoadParams(const Params& params) override;
   void onExecute(Context* context) override;
   std::string onGetFriendlyName() const override;
@@ -31,9 +33,13 @@ private:
   std::string m_filename;
 };
 
-OpenBrowserCommand::OpenBrowserCommand()
-  : Command(CommandId::OpenBrowser(), CmdUIOnlyFlag)
+OpenBrowserCommand::OpenBrowserCommand() : Command(CommandId::OpenBrowser())
 {
+}
+
+bool OpenBrowserCommand::onEnabled(Context* context)
+{
+  return context->isUIAvailable();
 }
 
 void OpenBrowserCommand::onLoadParams(const Params& params)

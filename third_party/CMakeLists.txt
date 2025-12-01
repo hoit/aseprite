@@ -1,5 +1,5 @@
 # Aseprite
-# Copyright (C) 2021-2024  Igara Studio S.A.
+# Copyright (C) 2021-2025  Igara Studio S.A.
 # Copyright (C) 2001-2018  David Capello
 
 include_directories(.)
@@ -8,15 +8,13 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC)
 
-if(NOT USE_SHARED_JPEGLIB)
-  add_subdirectory(jpeg)
-endif()
-
 if(NOT USE_SHARED_ZLIB)
   set(SKIP_INSTALL_ALL on)
   # Don't build zlib tests
   set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "Enable Zlib Examples")
+  set(ZLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/zlib" CACHE INTERNAL "")
   add_subdirectory(zlib)
+  add_library(ZLIB::ZLIB ALIAS zlibstatic)
 endif()
 
 if(NOT USE_SHARED_LIBPNG)
@@ -56,6 +54,14 @@ endif()
 if(NOT USE_SHARED_TINYXML)
   set(tinyxml2_BUILD_TESTING OFF CACHE BOOL "Build tests for tinyxml2")
   add_subdirectory(tinyxml2)
+endif()
+
+if(NOT USE_SHARED_TINYEXIF)
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "build as shared library")
+  set(BUILD_STATIC_LIBS ON CACHE BOOL "build as static library")
+  set(LINK_CRT_STATIC_LIBS OFF CACHE BOOL "link CRT static library")
+  set(BUILD_DEMO OFF CACHE BOOL "build demo binary")
+  add_subdirectory(TinyEXIF)
 endif()
 
 if(REQUIRE_CURL AND NOT USE_SHARED_CURL)
@@ -140,6 +146,8 @@ set(ENABLE_CAT OFF CACHE BOOL "Enable cat building")
 set(ENABLE_TAR OFF CACHE BOOL "Enable tar building")
 set(ENABLE_CPIO OFF CACHE BOOL "Enable cpio building")
 set(ENABLE_LIBB2 OFF CACHE BOOL "Enable the use of the system LIBB2 library if found")
+set(ENABLE_ICONV OFF CACHE BOOL "Enable iconv support")
+set(WINDOWS_VERSION "WS08" CACHE STRING "Set Windows Vista as the target version for compiling libarchive (Windows only)" FORCE)
 add_subdirectory(libarchive)
 target_include_directories(archive_static INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libarchive/libarchive>)

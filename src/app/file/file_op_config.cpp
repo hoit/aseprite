@@ -5,7 +5,7 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/file/file_op_config.h"
@@ -27,6 +27,7 @@ void FileOpConfig::fillFromPreferences()
   rgbMapAlgorithm = pref.quantization.rgbmapAlgorithm();
   fitCriteria = pref.quantization.fitCriteria();
   cacheCompressedTilesets = pref.tileset.cacheCompressedTilesets();
+  composeGroups = pref.experimental.composeGroups();
 }
 
 } // namespace app

@@ -6,23 +6,19 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/app.h"
-#include "app/pref/preferences.h"
 #include "app/cmd/flatten_layers.h"
 #include "app/commands/command.h"
 #include "app/context_access.h"
-#include "app/doc.h"
-#include "app/doc_api.h"
 #include "app/doc_range.h"
 #include "app/modules/gui.h"
+#include "app/pref/preferences.h"
 #include "app/tx.h"
-#include "doc/blend_internals.h"
 #include "doc/layer.h"
 #include "doc/sprite.h"
-#include "ui/ui.h"
 
 namespace app {
 
@@ -35,15 +31,13 @@ protected:
   void onExecute(Context* context) override;
 };
 
-MergeDownLayerCommand::MergeDownLayerCommand()
-  : Command(CommandId::MergeDownLayer(), CmdRecordableFlag)
+MergeDownLayerCommand::MergeDownLayerCommand() : Command(CommandId::MergeDownLayer())
 {
 }
 
 bool MergeDownLayerCommand::onEnabled(Context* context)
 {
-  if (!context->checkFlags(ContextFlags::ActiveDocumentIsWritable |
-                           ContextFlags::HasActiveSprite))
+  if (!context->checkFlags(ContextFlags::ActiveDocumentIsWritable | ContextFlags::HasActiveSprite))
     return false;
 
   const ContextReader reader(context);
@@ -52,15 +46,13 @@ bool MergeDownLayerCommand::onEnabled(Context* context)
     return false;
 
   const Layer* src_layer = reader.layer();
-  if (!src_layer ||
-      !src_layer->isImage() ||
-      src_layer->isTilemap()) // TODO Add support to merge tilemaps (and groups!)
+  if (!src_layer || !src_layer->isImage() || src_layer->isTilemap()) // TODO Add support to merge
+                                                                     // tilemaps (and groups!)
     return false;
 
   const Layer* dst_layer = src_layer->getPrevious();
-  if (!dst_layer ||
-      !dst_layer->isImage() ||
-      dst_layer->isTilemap()) // TODO Add support to merge tilemaps
+  if (!dst_layer || !dst_layer->isImage() || dst_layer->isTilemap()) // TODO Add support to merge
+                                                                     // tilemaps
     return false;
 
   return true;

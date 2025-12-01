@@ -6,14 +6,12 @@
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "app/app.h"
 #include "app/commands/command.h"
 #include "app/ui/workspace.h"
-
-#include <cstdio>
 
 namespace app {
 
@@ -28,8 +26,7 @@ protected:
   void onExecute(Context* context) override;
 };
 
-DuplicateViewCommand::DuplicateViewCommand()
-  : Command(CommandId::DuplicateView(), CmdUIOnlyFlag)
+DuplicateViewCommand::DuplicateViewCommand() : Command(CommandId::DuplicateView())
 {
 }
 
