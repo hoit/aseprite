@@ -7,9 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #os: [windows-latest, macos-latest, ubuntu-latest]
-        # adapter le chemin de l'artifact en fonction de l'OS
-        os: [windows-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
         build_type: [RelWithDebInfo, Debug]
         #ui: [gui, cli]
         ui: [gui]
@@ -113,13 +111,19 @@ jobs:
         export ASEPRITE=$PWD/build/bin/aseprite
         cd tests
         $XVFB bash run-tests.sh
+    - name: Set artifact path
+      id: artifact_path
+      run: |
+        if [ "${{ runner.os }}" = "macOS" ]; then
+          echo "path=/Users/runner/work/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
+        elif [ "${{ runner.os }}" = "Linux" ]; then
+          echo "path=/home/runner/work/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
+        else
+          echo "path=D:/a/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
     - name: artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}-${{ matrix.ui }}-${{ matrix.scripting }}-${{ matrix.build_type }}
-        # path pour MAC OS
-        #path: /Users/runner/work/aseprite/aseprite/build/bin
-        # path pour Ubuntu
-        #path: /home/runner/work/aseprite/aseprite/build/bin
-        # path pour Windows
-        path: D:/a/aseprite/aseprite/build/bin
+        path: ${{ steps.artifact_path.outputs.path }}
