@@ -110,6 +110,11 @@ jobs:
         export ASEPRITE=$PWD/build/bin/aseprite
         cd tests
         $XVFB bash run-tests.sh
+    - name: Add OpenSSL DLLs
+      if: runner.os == 'Windows'
+      run: |
+        cp "C:/Program Files/OpenSSL/bin/libcrypto-3-x64.dll" build/bin/ || echo "libcrypto not found"
+        cp "C:/Program Files/OpenSSL/bin/libssl-3-x64.dll" build/bin/ || echo "libssl not found"
     - name: Set artifact path
       id: artifact_path
       run: |
@@ -117,7 +122,7 @@ jobs:
           echo "path=/Users/runner/work/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
         elif [ "${{ runner.os }}" = "Linux" ]; then
           echo "path=/home/runner/work/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
-        else
+        elif [ "${{ runner.os }}" = "Windows" ]; then
           echo "path=D:/a/aseprite/aseprite/build/bin" >> $GITHUB_OUTPUT
         fi
       shell: bash
