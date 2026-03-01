@@ -116,7 +116,6 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         cp "C:/Program Files/OpenSSL/bin/libcrypto-3-x64.dll" build/bin/ || echo "libcrypto not found"
-        cp "C:/Program Files/OpenSSL/bin/libssl-3-x64.dll" build/bin/ || echo "libssl not found"
     - name: Set artifact path
       id: artifact_path
       run: |
